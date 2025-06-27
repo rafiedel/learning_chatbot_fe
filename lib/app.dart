@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:learning_chatbot/auth_gate.dart';
 import 'package:learning_chatbot/core/themes/_themes.dart';
-import 'package:learning_chatbot/features/chatbot/presentation/pages/_pages.dart';
 import 'package:learning_chatbot/services/navigations/_navigations.dart';
 
 final nav = NavigationService();

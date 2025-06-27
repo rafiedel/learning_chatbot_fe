@@ -1,12 +1,10 @@
 // lib/features/login/presentation/pages/login_page.dart
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:learning_chatbot/auth_gate.dart';
 import 'package:learning_chatbot/core/client/_client.dart';
+import 'package:learning_chatbot/core/environments/_environments.dart';
 import 'package:learning_chatbot/services/pref_service.dart';
-
-final get = GetIt.I;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -25,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
 
     final resp = await apiCall<Response<Map<String, dynamic>>>(
       postIt<Map<String, dynamic>>(
-        'http://10.0.2.2:8000/auth/login/',
+        EndPoints.login,
         headers: {'Content-Type': 'application/json'},
         model: {
           'username': _userC.text.trim(),

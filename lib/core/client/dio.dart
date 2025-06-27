@@ -14,7 +14,8 @@ Future<Response<T>> getIt<T>(
   if (kDebugMode) {
     LoggerService.i({
       'url': url,
-      'headers': headers,
+      'headers': getHeaders,
+      'query_parameters' : queryParameters
     });
   }
   final resp = await get<Dio>().get<T>(
@@ -42,12 +43,10 @@ Future<Response<T>> postIt<T>(
   Map<String, dynamic>? queryParameters,
 }) async {
   final getHeaders = headers ?? PrefService.getHeaders();
-  print(getHeaders);
-  print("kucing");
   if (kDebugMode) {
     LoggerService.i({
       'url': url,
-      'headers': headers,
+      'headers': getHeaders,
       'model': '$model',
     });
   }
@@ -78,7 +77,7 @@ Future<Response<T>> putIt<T>(
   if (kDebugMode) {
     LoggerService.i({
       'url': url,
-      'headers': headers,
+      'headers': getHeaders,
       'model': '$model',
     });
   }

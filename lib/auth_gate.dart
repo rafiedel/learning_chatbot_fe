@@ -2,13 +2,13 @@
 import 'dart:convert';                           // base64 + json
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
+import 'package:learning_chatbot/core/environments/_environments.dart';
 import 'package:learning_chatbot/features/auth/login/presentation/page/login_page.dart';
 import 'package:learning_chatbot/features/chatbot/presentation/pages/_pages.dart';
+import 'package:learning_chatbot/services/logger_service.dart';
 
 import '../services/pref_service.dart';
-
-final get = GetIt.I;
+import 'services/dependencies/di.dart';
 
 class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
@@ -42,7 +42,7 @@ class _AuthGateState extends State<AuthGate> {
       try {
         final dio = get<Dio>();
         final r = await dio.post(
-          'http://10.0.2.2:8000/auth/refresh/',
+          EndPoints.refresh,
           data: {'refresh': refresh},
           options: Options(headers: {'Content-Type': 'application/json'}),
         );
@@ -50,6 +50,7 @@ class _AuthGateState extends State<AuthGate> {
           access:  r.data['access'],
           refresh: r.data['refresh'] ?? refresh,
         );
+        LoggerService.i(PrefService.accessToken);
         return true; // refreshed successfully
       } catch (_) {
         return false; // refresh failed → force login

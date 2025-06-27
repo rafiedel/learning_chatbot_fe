@@ -2,10 +2,12 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
+import 'package:injectable/injectable.dart';
 import 'package:learning_chatbot/core/constants/_constants.dart';
 import 'package:learning_chatbot/services/dependencies/di.dart';
 import 'package:learning_chatbot/services/pref_service.dart';
 
+@singleton
 class TokenInterceptor extends Interceptor {
   bool _isRefreshing = false;
   final List<void Function(String)> _queue = [];
