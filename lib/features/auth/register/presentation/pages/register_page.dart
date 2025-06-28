@@ -1,35 +1,37 @@
-// lib/features/login/presentation/pages/login_page.dart
+// lib/features/register/presentation/pages/register_page.dart
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:learning_chatbot/app.dart';
 import 'package:learning_chatbot/auth_gate.dart';
 import 'package:learning_chatbot/core/client/_client.dart';
 import 'package:learning_chatbot/core/environments/_environments.dart';
-import 'package:learning_chatbot/features/auth/register/presentation/pages/register_page.dart';
-import 'package:learning_chatbot/services/pref_service.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final _userC = TextEditingController();
+  final _emailC = TextEditingController();
   final _passC = TextEditingController();
   bool _loading = false;
   bool _obscurePassword = true;
 
-  Future<void> _login() async {
+  Future<void> _register() async {
     setState(() => _loading = true);
 
     final resp = await apiCall<Response<Map<String, dynamic>>>(
       postIt<Map<String, dynamic>>(
-        EndPoints.login,
-        headers: {'Content-Type': 'application/json'},
+        EndPoints.register,
+        headers: {
+          'Content-Type': 'application/json',
+        },
         model: {
           'username': _userC.text.trim(),
+          'email': _emailC.text.trim(),
           'password': _passC.text,
         },
       ),
@@ -39,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
 
     resp.fold(
       (failure) => ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(failure.message ?? 'Login failed')),
+        SnackBar(content: Text(failure.message ?? 'Registration failed')),
       ),
       (response) async {
         final data = response.data;
@@ -49,14 +51,17 @@ class _LoginPageState extends State<LoginPage> {
           );
           return;
         }
-        await PrefService.saveAuthTokens(
-          access: data['access'] as String,
-          refresh: data['refresh'] as String,
+
+        // Optionally save tokens if your API returns them
+        // await PrefService.saveAuthTokens(...);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Registration successful!')),
         );
+
+        // Optionally navigate to login or authenticated area
         if (!mounted) return;
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const AuthGate()),
-        );
+          nav.pushReplacement(AuthGate());
       },
     );
   }
@@ -72,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Text(
-                  'Learning Chatbot',
+                  'Create Account',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 28,
@@ -81,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'your study assistant, make life easier',
+                  'Register to get started',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.grey,
@@ -95,6 +100,15 @@ class _LoginPageState extends State<LoginPage> {
                     labelText: 'Username',
                     border: OutlineInputBorder(),
                   ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _emailC,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.emailAddress,
                 ),
                 const SizedBox(height: 16),
                 TextField(
@@ -121,7 +135,7 @@ class _LoginPageState extends State<LoginPage> {
                 SizedBox(
                   height: 48,
                   child: ElevatedButton(
-                    onPressed: _loading ? null : _login,
+                    onPressed: _loading ? null : _register,
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -138,25 +152,25 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           )
                         : const Text(
-                            'LOGIN',
+                            'REGISTER',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
-                              color: Colors.white,
+                              color: Colors.white
                             ),
                           ),
+                          
                   ),
                 ),
-                const SizedBox(height: 16),
                 TextButton(
                   onPressed: () =>
-                    nav.push(RegisterPage()),
-                  child: const Text(
+                    nav.pop(),
+                  child: Text(
                     "Don't have an account? Register",
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: Colors.blue
+                      color: Colors.purple.shade600
                     ),
                   ),
                 ),
@@ -168,10 +182,10 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-
   @override
   void dispose() {
     _userC.dispose();
+    _emailC.dispose();
     _passC.dispose();
     super.dispose();
   }
