@@ -63,6 +63,18 @@ class NavigationService implements Navigation {
       CustomPageRoute(widget),
     );
   }
+
+  /// Replaces current stack with AuthGate (home) and clears history.
+  void navigateReplacementToHome() {
+    _history.clear();
+    navigatorKey.currentState?.pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (_) => const AuthGate(),
+        settings: const RouteSettings(name: '/'),
+      ),
+      (_) => false,
+    );
+  }
 }
 
 class SplashPageRoute<T> extends MaterialPageRoute<T> {

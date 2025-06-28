@@ -1,3 +1,5 @@
+// ignore_for_file: unused_field
+
 part of '_constants.dart';
 
 class Assets {

@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$GetSessionsParams {
 
- int? get page; String? get title;
+ int? get beforeId; String? get title;
 /// Create a copy of GetSessionsParams
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +29,16 @@ $GetSessionsParamsCopyWith<GetSessionsParams> get copyWith => _$GetSessionsParam
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GetSessionsParams&&(identical(other.page, page) || other.page == page)&&(identical(other.title, title) || other.title == title));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GetSessionsParams&&(identical(other.beforeId, beforeId) || other.beforeId == beforeId)&&(identical(other.title, title) || other.title == title));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,page,title);
+int get hashCode => Object.hash(runtimeType,beforeId,title);
 
 @override
 String toString() {
-  return 'GetSessionsParams(page: $page, title: $title)';
+  return 'GetSessionsParams(beforeId: $beforeId, title: $title)';
 }
 
 
@@ -49,7 +49,7 @@ abstract mixin class $GetSessionsParamsCopyWith<$Res>  {
   factory $GetSessionsParamsCopyWith(GetSessionsParams value, $Res Function(GetSessionsParams) _then) = _$GetSessionsParamsCopyWithImpl;
 @useResult
 $Res call({
- int? page, String? title
+ int? beforeId, String? title
 });
 
 
@@ -66,9 +66,9 @@ class _$GetSessionsParamsCopyWithImpl<$Res>
 
 /// Create a copy of GetSessionsParams
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? page = freezed,Object? title = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? beforeId = freezed,Object? title = freezed,}) {
   return _then(_self.copyWith(
-page: freezed == page ? _self.page : page // ignore: cast_nullable_to_non_nullable
+beforeId: freezed == beforeId ? _self.beforeId : beforeId // ignore: cast_nullable_to_non_nullable
 as int?,title: freezed == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
@@ -81,10 +81,10 @@ as String?,
 @JsonSerializable()
 
 class _GetSessionsParams implements GetSessionsParams {
-  const _GetSessionsParams({this.page, this.title});
+  const _GetSessionsParams({this.beforeId, this.title});
   factory _GetSessionsParams.fromJson(Map<String, dynamic> json) => _$GetSessionsParamsFromJson(json);
 
-@override final  int? page;
+@override final  int? beforeId;
 @override final  String? title;
 
 /// Create a copy of GetSessionsParams
@@ -100,16 +100,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _GetSessionsParams&&(identical(other.page, page) || other.page == page)&&(identical(other.title, title) || other.title == title));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _GetSessionsParams&&(identical(other.beforeId, beforeId) || other.beforeId == beforeId)&&(identical(other.title, title) || other.title == title));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,page,title);
+int get hashCode => Object.hash(runtimeType,beforeId,title);
 
 @override
 String toString() {
-  return 'GetSessionsParams(page: $page, title: $title)';
+  return 'GetSessionsParams(beforeId: $beforeId, title: $title)';
 }
 
 
@@ -120,7 +120,7 @@ abstract mixin class _$GetSessionsParamsCopyWith<$Res> implements $GetSessionsPa
   factory _$GetSessionsParamsCopyWith(_GetSessionsParams value, $Res Function(_GetSessionsParams) _then) = __$GetSessionsParamsCopyWithImpl;
 @override @useResult
 $Res call({
- int? page, String? title
+ int? beforeId, String? title
 });
 
 
@@ -137,9 +137,9 @@ class __$GetSessionsParamsCopyWithImpl<$Res>
 
 /// Create a copy of GetSessionsParams
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? page = freezed,Object? title = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? beforeId = freezed,Object? title = freezed,}) {
   return _then(_GetSessionsParams(
-page: freezed == page ? _self.page : page // ignore: cast_nullable_to_non_nullable
+beforeId: freezed == beforeId ? _self.beforeId : beforeId // ignore: cast_nullable_to_non_nullable
 as int?,title: freezed == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String?,
   ));

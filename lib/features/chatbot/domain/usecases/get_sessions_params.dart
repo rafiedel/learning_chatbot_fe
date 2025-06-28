@@ -6,7 +6,7 @@ part 'get_sessions_params.g.dart';
 @freezed
 abstract class GetSessionsParams with _$GetSessionsParams {
   const factory GetSessionsParams({
-    int? page,
+    int? beforeId,
     String? title,
   }) = _GetSessionsParams;
 

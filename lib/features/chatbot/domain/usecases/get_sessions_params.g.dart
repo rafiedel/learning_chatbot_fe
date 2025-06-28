@@ -8,9 +8,9 @@ part of 'get_sessions_params.dart';
 
 _GetSessionsParams _$GetSessionsParamsFromJson(Map<String, dynamic> json) =>
     _GetSessionsParams(
-      page: (json['page'] as num?)?.toInt(),
+      beforeId: (json['beforeId'] as num?)?.toInt(),
       title: json['title'] as String?,
     );
 
 Map<String, dynamic> _$GetSessionsParamsToJson(_GetSessionsParams instance) =>
-    <String, dynamic>{'page': instance.page, 'title': instance.title};
+    <String, dynamic>{'beforeId': instance.beforeId, 'title': instance.title};

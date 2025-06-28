@@ -1,7 +1,7 @@
 part of '_widgets.dart';
 
 class SymbolSheete extends StatefulWidget {
-  const SymbolSheete({required this.initial});
+  const SymbolSheete({super.key, required this.initial});
   final String initial;
 
   @override
@@ -10,16 +10,19 @@ class SymbolSheete extends StatefulWidget {
 
 class SymbolSheeteState extends State<SymbolSheete> {
   late final TextEditingController _sheetCtrl;
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
     _sheetCtrl = TextEditingController(text: widget.initial);
+    _focusNode.requestFocus();
   }
 
   @override
   void dispose() {
     _sheetCtrl.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -78,17 +81,21 @@ class SymbolSheeteState extends State<SymbolSheete> {
         child: Column(
           children: [
             // read-only TextField (no phone keyboard)
-            TextField(
-              controller: _sheetCtrl,
-              showCursor: true, 
-              readOnly: true,
-              minLines: 2,
-              maxLines: 4,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                hintText: 'Enter text...',
+            Scrollbar(
+              child: TextField(
+                controller: _sheetCtrl,
+                focusNode: _focusNode,        // <--- This makes it "focused"
+                readOnly: true,               // Can't edit
+                showCursor: true,             // Cursor visible
+                enableInteractiveSelection: true,
+                minLines: 2,
+                maxLines: 4,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  hintText: 'Enter text...',
+                ),
               ),
             ),
             const SizedBox(height: 12),
@@ -96,19 +103,18 @@ class SymbolSheeteState extends State<SymbolSheete> {
             // symbol palette (scrollable)
             Expanded(
               child: ListView(
-                padding: EdgeInsets.zero,
                 children: _symbols.entries.map((e) => ExpansionTile(
+                  tilePadding: EdgeInsets.all(0),
                   initiallyExpanded: e.key == 'Simbol: Matematika',
                   title: Text(e.key,
                       style: const TextStyle(fontWeight: FontWeight.w600)),
                   children: [
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 4, vertical: 6),
+                      padding: const EdgeInsets.symmetric(vertical: 6),
                       child: Wrap(
                         spacing: 12,
                         runSpacing: 12,
-                        children: e.value.map((g) => GestureDetector(
+                        children: e.value.map((g) => InkWell(
                           onTap: () => _insert(g),
                           child: Text(g, style: const TextStyle(fontSize: 22)),
                         )).toList(),
@@ -123,6 +129,17 @@ class SymbolSheeteState extends State<SymbolSheete> {
             Align(
               alignment: Alignment.centerRight,
               child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.transparent,
+                  padding: EdgeInsets.symmetric(
+                    vertical: 18, horizontal: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                    side: BorderSide(color: Colors.deepPurple),
+                  ),
+                  elevation: 4,
+                ),
                 onPressed: _close,
                 icon: const Icon(Icons.close),
                 label: const Text('Close'),

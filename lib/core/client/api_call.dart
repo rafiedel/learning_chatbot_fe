@@ -26,7 +26,8 @@ Future<Either<Failure, T>> apiCall<T>(Future<T> t) async {
     } else if (e.error is FormatException) {
       Logger().e('Error: Format from front end error');
       return Left(GeneralFailure(message: 'Format Exception'));
-    } else if ((e.response?.statusCode ?? 0) == 403) {
+    } else if ((e.response?.statusCode ?? 0) == 401 || 
+               (e.response?.statusCode ?? 0) == 403) {
       Logger().e('Unauthorized');
       return Left(GeneralFailure(message: 'Unauthorize'));
     } else if ((e.response?.statusCode ?? 0) == 404) {

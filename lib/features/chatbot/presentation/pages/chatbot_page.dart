@@ -13,7 +13,10 @@ class _ChatBotPageState extends State<ChatBotPage> {
   @override
   void initState() {
     _chatbotCubit = get<ChatbotCubit>();
-     _chatbotCubit.initChatScrollController();
+    _chatbotCubit.initChatScrollController();
+    _chatbotCubit.initGroupChatScrollController();
+    _chatbotCubit.initImagePickerService();
+    _chatbotCubit.initNewChatController();
     initialPageLoad();
     super.initState();
   }
@@ -27,87 +30,73 @@ class _ChatBotPageState extends State<ChatBotPage> {
   Future<void> initialPageLoad() async => _chatbotCubit.getGroupChats();
   Future<void> onDrawerChanged(bool newIsDrawerOpen) async =>
       _chatbotCubit.setIsDrawerOpen(newIsDrawerOpen);
-  Future<void> onOpenSymbolKeyboard(BuildContext context) async =>
-      _chatbotCubit.openSymbolKeyboard(context);
+  Future<void> onOpenSymbolKeyboard(String initString) async {
+    final result = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      isDismissible: false,
+      enableDrag: false,
+      builder: (_) => FractionallySizedBox(
+        heightFactor: 0.80,
+        child: SymbolSheete(initial: initString),
+      ),
+    );
+    _chatbotCubit.openSymbolKeyboard(result!);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<ChatbotCubit, ChatbotState, bool>(
+    return BlocListener<ChatbotCubit, ChatbotState>(
       bloc: _chatbotCubit,
-      selector: (state) => state.isDrawerOpen,
-      builder: (context, isDrawerOpen) {
-        return LearningChatbotScaffold(
-          padding: false,
-          resizeToAvoidBottomInset: !isDrawerOpen,
-          onDrawerChanged: onDrawerChanged,
-          drawer: BlocBuilder<ChatbotCubit, ChatbotState>(
-            bloc: _chatbotCubit,
-            builder: (context, state) {
-              return SlidingDrawer(chatbotCubit: _chatbotCubit);
-            },
-          ),
-          body: Column(
-            children: [
-              Container(
-                height: 50,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      listenWhen: (previous, current) => 
+        previous.isError != current.isError && current.isError == true,
+      listener: (context, state) {
+        ErrorMessenger(state.errorMessage).show(context);       
+      },
+      child: BlocSelector<ChatbotCubit, ChatbotState, bool>(
+        bloc: _chatbotCubit,
+        selector: (state) => state.isDrawerOpen,
+        builder: (context, isDrawerOpen) {
+          return LearningChatbotScaffold(
+            padding: false,
+            resizeToAvoidBottomInset: !isDrawerOpen,
+            onDrawerChanged: onDrawerChanged,
+            drawer: BlocBuilder<ChatbotCubit, ChatbotState>(
+              bloc: _chatbotCubit,
+              builder: (context, state) {
+                return SlidingDrawer(chatbotCubit: _chatbotCubit);
+              },
+            ),
+            body: Column(
+              children: [
+                ChatAppBar(),
+                Expanded(
+                  child: BlocBuilder<ChatbotCubit, ChatbotState>(
+                    bloc: _chatbotCubit,
+                    builder: (context, state) => ChatListView(
+                      chatScrollController: state.chatScrollController,
+                      chatList: state.chatList,
+                      isLoadingChats: state.isLoadingChats,
+                      isWaitingAI: state.isLoading,
+                    ),
+                  ),
+                ),
+                Column(
                   children: [
-                    Builder(
-                      builder: (context) => IconButton(
-                        onPressed: () => Scaffold.of(context).openDrawer(),
-                        icon: Icon(Icons.menu),
+                    Divider(),
+                    Padding(
+                      padding: const EdgeInsetsGeometry.symmetric(
+                        horizontal: 10,
                       ),
-                    ),
-                    Text(
-                      '🧠 Learning Chatbot 🤖',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 2,
-                      ),
-                    ),
-                    IconButton(onPressed: () {}, icon: Icon(Icons.person)),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: BlocBuilder<ChatbotCubit, ChatbotState>(
-                  bloc: _chatbotCubit,
-                  builder: (context, state) {
-                    return SingleChildScrollView(
-                      controller: state.chatScrollController,
-                      child: Column(
-                        children: state.chatList.map((e) {
-                          if (e.role.toLowerCase() == "user") {
-                            return UserBubbleChat(
-                              content: e.content, 
-                              imageUrl: e.imageUrl
-                            );
-                          }
-                          return AssistantMarkdown(content: e.content);
-                        }).toList()
-                      )
-                    );
-                  },
-                ),
-              ),
-              Column(
-                children: [
-                  Divider(),
-                  Padding(
-                    padding: const EdgeInsetsGeometry.symmetric(horizontal: 10),
-                    child: BlocBuilder<ChatbotCubit, ChatbotState>(
-                      bloc: _chatbotCubit,
-                      builder: (context, state) {
-                        return Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: SingleChildScrollView(
+                      child: BlocBuilder<ChatbotCubit, ChatbotState>(
+                        bloc: _chatbotCubit,
+                        builder: (context, state) {
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
                                 child: Scrollbar(
-                                  controller: ScrollController(),
-                                  thumbVisibility: true,
                                   child: TextField(
                                     decoration: InputDecoration(
                                       border: InputBorder.none,
@@ -115,65 +104,123 @@ class _ChatBotPageState extends State<ChatBotPage> {
                                       focusedBorder: InputBorder.none,
                                       hintText: 'Enter text...',
                                     ),
-                                    controller: state.titleSearchController,
+                                    controller: state.newChatController,
                                     minLines: 1,
                                     maxLines: 5,
                                   ),
                                 ),
                               ),
-                            ),
-                            if ('\n'
-                                  .allMatches(
-                                    state.titleSearchController.text,
-                                  )
-                                  .length +
-                              1 >=
-                            3)
-                              IconButton(
-                                onPressed: () {},
-                                iconSize: 10,
-                                padding: EdgeInsets.zero,
-                                icon: Icon(Icons.open_in_full_rounded),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  if (state.isNewChatController3Lines)
+                                    Transform.scale(
+                                      scale: 0.6,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            50,
+                                          ),
+                                          border: Border.all(
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                        child: IconButton(
+                                          onPressed: () {},
+                                          iconSize: 30,
+                                          padding: EdgeInsets.zero,
+                                          icon: Icon(
+                                            Icons.open_in_full_rounded,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  if (state.imageFile != null)
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 4,
+                                      ),
+                                      child: InkWell(
+                                        onTap: () {
+                                        },
+                                        child: Container(
+                                          width: 40,
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(
+                                              4,
+                                            ),
+                                            border: Border.all(
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                          clipBehavior: Clip.antiAlias,
+                                          child: Image.file(
+                                            state.imageFile!,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                ],
                               ),
-                          ],
-                        );
-                      },
+                            ],
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                  Container(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          IconButton(
-                            onPressed: () {},
-                            icon: Icon(Icons.camera_alt),
-                          ),
-                          IconButton(onPressed: () {}, icon: Icon(Icons.image)),
-                          IconButton(
-                            onPressed: () => onOpenSymbolKeyboard(context),
-                            icon: Icon(Icons.functions),
-                          ),
-                        ],
-                      ),
-                      IconButton(
-                        onPressed: () {},
-                        style: ButtonStyle(
-                          backgroundColor: WidgetStateProperty.all(
-                            Colors.purple,
-                          ),
+                    Container(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            IconButton(
+                              onPressed: () => _chatbotCubit.takePhoto(),
+                              icon: Icon(Icons.camera_alt),
+                            ),
+                            IconButton(
+                              onPressed: () => _chatbotCubit.pickImage(),
+                              icon: Icon(Icons.image),
+                            ),
+                            BlocBuilder<ChatbotCubit, ChatbotState>(
+                              bloc: _chatbotCubit,
+                              builder: (context, state) {
+                                return IconButton(
+                                  onPressed: () => onOpenSymbolKeyboard(
+                                    state.titleSearchController.text,
+                                  ),
+                                  icon: Icon(Icons.functions),
+                                );
+                              },
+                            ),
+                          ],
                         ),
-                        icon: Icon(Icons.arrow_upward),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
+                        BlocBuilder<ChatbotCubit, ChatbotState>(
+                          bloc: _chatbotCubit,
+                          builder: (context, state) {
+                            return IconButton(
+                              onPressed: () {
+                                _chatbotCubit.onSubmitNewChat();
+                              },
+                              style: ButtonStyle(
+                                backgroundColor: WidgetStateProperty.all(
+                                  Colors.purple,
+                                ),
+                              ),
+                              icon: Icon(Icons.arrow_upward),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

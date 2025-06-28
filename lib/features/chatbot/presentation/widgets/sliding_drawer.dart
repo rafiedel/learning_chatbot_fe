@@ -60,61 +60,134 @@ class SlidingDrawerState extends State<SlidingDrawer> {
           child: Material(
             color: Colors.grey.shade900,
             child: Padding(
-              padding: EdgeInsetsGeometry.symmetric(
-                horizontal: 10,
-                vertical: 20,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
               child: Column(
                 children: [
                   BlocBuilder<ChatbotCubit, ChatbotState>(
                     bloc: widget.chatbotCubit,
                     builder: (context, state) {
-                      return TextField(
-                        controller: state.titleSearchController,
-                        onChanged: (value) 
-                          => widget.chatbotCubit.onTitleGroupChatSearch(),
-                        decoration: InputDecoration(border: OutlineInputBorder()),
+                      return TitleTextField(
+                        titleSearchController: 
+                          state.titleSearchController, 
+                        onChanged: (_) =>
+                          widget.chatbotCubit.onTitleGroupChatSearch()
                       );
-                    },
+                    }
                   ),
                   SizedBox(height: 10),
                   Divider(),
                   SizedBox(height: 5),
-                  ElevatedButton(
-                    onPressed: () {
-                      widget.chatbotCubit.makeNewGroupChat();
-                      Navigator.of(context).maybePop();
-                    },
-                    child: Text(
-                      "NEW CHAT +",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 10,
-                        overflow: TextOverflow.ellipsis,
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        widget.chatbotCubit.makeNewGroupChat();
+                        Navigator.of(context).maybePop();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.transparent,
+                        padding: EdgeInsets.symmetric(vertical: 18),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          side: BorderSide(color: Colors.deepPurple),
+                        ),
+                        elevation: 4,
+                      ),
+                      child: Text(
+                        "NEW CHAT +",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 2,
+                          fontSize: 16,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ),
                   ),
                   SizedBox(height: 5),
                   Divider(),
+
+                  // Group chat list
                   Expanded(
-                    child: SingleChildScrollView(
-                      child: BlocBuilder<ChatbotCubit, ChatbotState>(
-                        bloc: widget.chatbotCubit,
-                        builder: (context, state) {
-                          print(state.groupChatList);
-                          return Column(
-                            children: state.groupChatList.map((groupChat) {
-                              return ListTile(
-                                title: Text('Group Chat ${groupChat.title}'),
-                                onTap: () {
-                                  widget.chatbotCubit.chooseGroupChat(groupChat.id);
-                                  Navigator.of(context).maybePop();
-                                },
-                              );
-                            }).toList(),
+                    child: BlocBuilder<ChatbotCubit, ChatbotState>(
+                      bloc: widget.chatbotCubit,
+                      builder: (context, state) {
+                        if (state.isLoadingGroupChats &&
+                              state.groupChatList.isEmpty) {
+                          return SkeletonGroupChatListView(
+                            howMuchItems: 10,
                           );
-                        },
-                      ),
+                        }
+
+                        return ListView.builder(
+                          controller: state.groupChatScrollController,
+                          itemCount: state.groupChatList.length,
+                          itemBuilder: (context, index) {
+                            final groupChat = state.groupChatList[index];
+                            return ListTile(
+                              selected: groupChat.id == state.selectedGroupChatId,
+                              selectedColor: Colors.grey.shade200,
+                              // ignore: deprecated_member_use
+                              selectedTileColor: Colors.grey.shade800.withOpacity(0.5),
+                              contentPadding: EdgeInsets.symmetric(horizontal: 5),
+                              title: Text(
+                                groupChat.title,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.5,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              subtitle: Text(
+                                DateFormat('MMM d, yyyy • h:mm a').format(groupChat.createdAt),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.grey,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              trailing: MorePopUpMenuButton(
+                                onDelete: () async {
+                                  final bool? confirmed = await 
+                                    showDialog<bool>(
+                                      context: context,
+                                      builder: (BuildContext dialogContext) =>
+                                        DeleteConfirmDialog(
+                                          content: groupChat.title
+                                        ),
+                                    );
+                                  if (confirmed == true) {
+                                    widget.chatbotCubit.
+                                      deleteGroupChatById(
+                                        groupChat.id);
+                                  }
+                                }, 
+                                onRename: () async {
+                                  final String? newTitle = await 
+                                    showDialog<String>(
+                                      context: context,
+                                      builder: (BuildContext dialogContext) =>
+                                        EditTitleDialog(
+                                          oldTitle: groupChat.title,
+                                        )
+                                    );
+                                  if (newTitle != null) {
+                                    widget.chatbotCubit.
+                                      renameGroupChatById(
+                                        groupChat.id, newTitle);
+                                  }
+                                } 
+                              ),
+                              onTap: () {
+                                widget.chatbotCubit.chooseGroupChat(groupChat.id);
+                                Navigator.of(context).maybePop();
+                              },
+                            );
+                          },
+                        );
+                      },
                     ),
                   ),
                 ],

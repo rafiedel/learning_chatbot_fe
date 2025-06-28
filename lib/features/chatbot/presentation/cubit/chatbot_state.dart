@@ -1,55 +1,74 @@
 part of '_cubit.dart';
 
 class ChatbotState extends Equatable {
+  static const _sentinel = Object();
+  
   final bool isLoading;
   final bool isLoaded;
   final bool isError;
   final bool isDrawerOpen;
-  final bool isCannotLoadMoreChat; // New flag
+  final bool isCannotLoadMoreChat;
+  final bool isCannotLoadMoreGroupChat;
+  final bool isImageSizeTooBig;
+  final bool isNewChatController3Lines;
+  final bool isLoadingChats;
+  final bool isLoadingGroupChats;
+  final String errorMessage;       
+  final File? imageFile;      
   final List<ChatModel> chatList;
   final List<GroupChatModel> groupChatList;
-  final int chatPage;
-  final int groupChatPage;
   final int? selectedGroupChatId;
   final ScrollController chatScrollController;
   final ScrollController groupChatScrollController;
   final Timer debounce;
   final TextEditingController titleSearchController;
+  final TextEditingController newChatController;
 
   ChatbotState({
     this.isLoading = false,
     this.isLoaded = false,
     this.isError = false,
     this.isDrawerOpen = false,
-    this.isCannotLoadMoreChat = false, // default
+    this.isCannotLoadMoreGroupChat = false,
+    this.isCannotLoadMoreChat = false,
+    this.isImageSizeTooBig = false, 
+    this.isNewChatController3Lines = false,
+    this.isLoadingChats = false,
+    this.isLoadingGroupChats = false,
+    this.errorMessage = "",                 
+    this.imageFile,                 
     this.chatList = const [],
     this.groupChatList = const [],
-    this.chatPage = 1,
-    this.groupChatPage = 1,
-    this.selectedGroupChatId,
+    this.selectedGroupChatId = 0,
     TextEditingController? titleSearchController,
+    TextEditingController? newChatController,
     ScrollController? chatScrollController,
     ScrollController? groupChatScrollController,
     Timer? debounce,
   })  : chatScrollController = chatScrollController ?? ScrollController(),
-        groupChatScrollController =
-            groupChatScrollController ?? ScrollController(),
+        groupChatScrollController = groupChatScrollController ?? ScrollController(),
         debounce = debounce ?? Timer(Duration.zero, () {}),
-        titleSearchController =
-            titleSearchController ?? TextEditingController();
+        titleSearchController = titleSearchController ?? TextEditingController(),
+        newChatController = newChatController ?? TextEditingController();
 
   ChatbotState copyWith({
     bool? isLoading,
     bool? isLoaded,
     bool? isError,
     bool? isDrawerOpen,
-    bool? isCannotLoadMoreChat, // Add this
+    bool? isCannotLoadMoreChat,
+    bool? isCannotLoadMoreGroupChat,
+    bool? isImageSizeTooBig,      
+    bool? isNewChatController3Lines,
+    bool? isLoadingChats,
+    bool? isLoadingGroupChats,
+    String? errorMessage,             // NEW
+    Object? imageFile = _sentinel,           
     List<ChatModel>? chatList,
     List<GroupChatModel>? groupChatList,
-    int? chatPage,
-    int? groupChatPage,
     int? selectedGroupChatId,
     TextEditingController? titleSearchController,
+    TextEditingController? newChatController,
     ScrollController? chatScrollController,
     ScrollController? groupChatScrollController,
     Timer? debounce,
@@ -59,18 +78,21 @@ class ChatbotState extends Equatable {
       isLoaded: isLoaded ?? this.isLoaded,
       isError: isError ?? this.isError,
       isDrawerOpen: isDrawerOpen ?? this.isDrawerOpen,
-      isCannotLoadMoreChat: isCannotLoadMoreChat ?? this.isCannotLoadMoreChat, // Add this
+      isCannotLoadMoreGroupChat: isCannotLoadMoreGroupChat ?? this.isCannotLoadMoreGroupChat,
+      isCannotLoadMoreChat: isCannotLoadMoreChat ?? this.isCannotLoadMoreChat,
+      isImageSizeTooBig: isImageSizeTooBig ?? this.isImageSizeTooBig, 
+      isNewChatController3Lines: isNewChatController3Lines ?? this.isNewChatController3Lines,
+      isLoadingChats: isLoadingChats ?? this.isLoadingChats,
+      isLoadingGroupChats: isLoadingGroupChats ?? this.isLoadingGroupChats,
+      errorMessage: errorMessage ?? this.errorMessage,        // NEW
+      imageFile: imageFile == _sentinel ? this.imageFile : imageFile as File?,                  
       chatList: chatList ?? this.chatList,
       groupChatList: groupChatList ?? this.groupChatList,
-      chatPage: chatPage ?? this.chatPage,
-      groupChatPage: groupChatPage ?? this.groupChatPage,
       selectedGroupChatId: selectedGroupChatId ?? this.selectedGroupChatId,
-      titleSearchController:
-          titleSearchController ?? this.titleSearchController,
-      chatScrollController:
-          chatScrollController ?? this.chatScrollController,
-      groupChatScrollController:
-          groupChatScrollController ?? this.groupChatScrollController,
+      titleSearchController: titleSearchController ?? this.titleSearchController,
+      newChatController: newChatController ?? this.newChatController,
+      chatScrollController: chatScrollController ?? this.chatScrollController,
+      groupChatScrollController: groupChatScrollController ?? this.groupChatScrollController,
       debounce: debounce ?? this.debounce,
     );
   }
@@ -81,13 +103,19 @@ class ChatbotState extends Equatable {
         isLoaded,
         isError,
         isDrawerOpen,
-        isCannotLoadMoreChat, // Add here
+        isCannotLoadMoreGroupChat,
+        isCannotLoadMoreChat,
+        isImageSizeTooBig, 
+        isNewChatController3Lines,
+        isLoadingChats,
+        isLoadingGroupChats,
+        errorMessage,          
+        imageFile,        
         chatList,
         groupChatList,
-        chatPage,
-        groupChatPage,
         selectedGroupChatId,
         titleSearchController,
+        newChatController,
         chatScrollController,
         groupChatScrollController,
         debounce,
