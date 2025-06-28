@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gpt_markdown/gpt_markdown.dart';
 import 'package:intl/intl.dart';
+import 'package:learning_chatbot/app.dart';
 import 'package:learning_chatbot/features/chatbot/data/models/chat.dart';
 import 'package:learning_chatbot/features/chatbot/presentation/cubit/_cubit.dart';
 import 'package:learning_chatbot/features/chatbot/presentation/widgets/delete_confirm_dialog.dart';
 import 'package:learning_chatbot/features/chatbot/presentation/widgets/edit_title_dialog.dart';
 import 'package:learning_chatbot/features/chatbot/presentation/widgets/more_pop_up_menu_button.dart';
+import 'package:learning_chatbot/features/profile/presentation/pages/_pages.dart';
 import 'package:shimmer/shimmer.dart';
 
 part 'symbol_sheet.dart';

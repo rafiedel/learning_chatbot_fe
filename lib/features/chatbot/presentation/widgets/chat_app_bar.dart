@@ -29,7 +29,9 @@ class ChatAppBar extends StatelessWidget {
               letterSpacing: 2,
             ),
           ),
-          IconButton(onPressed: () {}, icon: Icon(Icons.person)),
+          IconButton(onPressed: () {
+            nav.navigateTo(ProfilePage());
+          }, icon: Icon(Icons.person)),
         ],
       ),
     );
