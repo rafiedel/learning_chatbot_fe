@@ -282,7 +282,9 @@ Future<Response<T>> postMultipart<T>(
       if (refreshed) {
         return postMultipart<T>(
           url,
-          formData: formData,
+          formData: FormData()
+            ..fields.addAll(formData.fields)
+            ..files.addAll(formData.files),
         );
       }
       nav.navigateReplacementToHome();

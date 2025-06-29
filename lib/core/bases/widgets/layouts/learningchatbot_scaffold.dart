@@ -6,6 +6,7 @@ class LearningChatbotScaffold extends StatelessWidget {
   final Widget? floatingActionButton;
   final Widget? drawer;
   final Color? backgroundColor;
+  final FloatingActionButtonLocation? floatingActionButtonLocation;
   final void Function(bool)? onDrawerChanged;
   final bool resizeToAvoidBottomInset;
   final bool safeArea;
@@ -21,6 +22,7 @@ class LearningChatbotScaffold extends StatelessWidget {
     this.drawer,
     this.backgroundColor,
     this.onDrawerChanged,
+    this.floatingActionButtonLocation,
     super.key,
   });
 
@@ -49,6 +51,7 @@ class LearningChatbotScaffold extends StatelessWidget {
       bottomNavigationBar: bottomNavigationBar,
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       floatingActionButton: floatingActionButton,
+      floatingActionButtonLocation: floatingActionButtonLocation,
     );
   }
 }

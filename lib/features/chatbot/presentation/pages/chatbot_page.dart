@@ -102,11 +102,14 @@ class _ChatBotPageState extends State<ChatBotPage> {
                                       border: InputBorder.none,
                                       enabledBorder: InputBorder.none,
                                       focusedBorder: InputBorder.none,
-                                      hintText: 'Enter text...',
+                                      hintText: state.isLoading
+                                        ? ''
+                                        : 'Enter text...',
                                     ),
                                     controller: state.newChatController,
                                     minLines: 1,
                                     maxLines: 5,
+                                    readOnly: state.isLoading,
                                   ),
                                 ),
                               ),
@@ -126,7 +129,11 @@ class _ChatBotPageState extends State<ChatBotPage> {
                                           ),
                                         ),
                                         child: IconButton(
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            nav.push(FullscreenTextfieldPage(
+                                              controller: state.newChatController,
+                                            ));
+                                          },
                                           iconSize: 30,
                                           padding: EdgeInsets.zero,
                                           icon: Icon(
@@ -135,7 +142,7 @@ class _ChatBotPageState extends State<ChatBotPage> {
                                         ),
                                       ),
                                     ),
-                                  if (state.imageFile != null)
+                                  if (state.imageFile != null && !state.isLoading)
                                     Padding(
                                       padding: const EdgeInsets.symmetric(
                                         vertical: 4,
@@ -201,11 +208,17 @@ class _ChatBotPageState extends State<ChatBotPage> {
                           builder: (context, state) {
                             return IconButton(
                               onPressed: () {
+                                if (state.isLoading) return ;
+                                if (state.newChatController.text.trim() == "") {
+                                  WarningMessenger("Please prompt something").show(context);
+                                  return ;
+                                }
                                 _chatbotCubit.onSubmitNewChat();
                               },
                               style: ButtonStyle(
                                 backgroundColor: WidgetStateProperty.all(
-                                  Colors.purple,
+                                  state.isLoading
+                                    ? Colors.grey.shade700 : Colors.purple,
                                 ),
                               ),
                               icon: Icon(Icons.arrow_upward),

@@ -2,7 +2,7 @@ part of '_cubit.dart';
 
 class ChatbotState extends Equatable {
   static const _sentinel = Object();
-  
+
   final bool isLoading;
   final bool isLoaded;
   final bool isError;
@@ -13,8 +13,9 @@ class ChatbotState extends Equatable {
   final bool isNewChatController3Lines;
   final bool isLoadingChats;
   final bool isLoadingGroupChats;
-  final String errorMessage;       
-  final File? imageFile;      
+  final bool failToSendChat; 
+  final String errorMessage;
+  final File? imageFile;
   final List<ChatModel> chatList;
   final List<GroupChatModel> groupChatList;
   final int? selectedGroupChatId;
@@ -31,12 +32,13 @@ class ChatbotState extends Equatable {
     this.isDrawerOpen = false,
     this.isCannotLoadMoreGroupChat = false,
     this.isCannotLoadMoreChat = false,
-    this.isImageSizeTooBig = false, 
+    this.isImageSizeTooBig = false,
     this.isNewChatController3Lines = false,
     this.isLoadingChats = false,
     this.isLoadingGroupChats = false,
-    this.errorMessage = "",                 
-    this.imageFile,                 
+    this.failToSendChat = false,
+    this.errorMessage = "",
+    this.imageFile,
     this.chatList = const [],
     this.groupChatList = const [],
     this.selectedGroupChatId = 0,
@@ -58,12 +60,13 @@ class ChatbotState extends Equatable {
     bool? isDrawerOpen,
     bool? isCannotLoadMoreChat,
     bool? isCannotLoadMoreGroupChat,
-    bool? isImageSizeTooBig,      
+    bool? isImageSizeTooBig,
     bool? isNewChatController3Lines,
     bool? isLoadingChats,
     bool? isLoadingGroupChats,
-    String? errorMessage,             // NEW
-    Object? imageFile = _sentinel,           
+    bool? failToSendChat, 
+    String? errorMessage,
+    Object? imageFile = _sentinel,
     List<ChatModel>? chatList,
     List<GroupChatModel>? groupChatList,
     int? selectedGroupChatId,
@@ -80,12 +83,13 @@ class ChatbotState extends Equatable {
       isDrawerOpen: isDrawerOpen ?? this.isDrawerOpen,
       isCannotLoadMoreGroupChat: isCannotLoadMoreGroupChat ?? this.isCannotLoadMoreGroupChat,
       isCannotLoadMoreChat: isCannotLoadMoreChat ?? this.isCannotLoadMoreChat,
-      isImageSizeTooBig: isImageSizeTooBig ?? this.isImageSizeTooBig, 
+      isImageSizeTooBig: isImageSizeTooBig ?? this.isImageSizeTooBig,
       isNewChatController3Lines: isNewChatController3Lines ?? this.isNewChatController3Lines,
       isLoadingChats: isLoadingChats ?? this.isLoadingChats,
       isLoadingGroupChats: isLoadingGroupChats ?? this.isLoadingGroupChats,
-      errorMessage: errorMessage ?? this.errorMessage,        // NEW
-      imageFile: imageFile == _sentinel ? this.imageFile : imageFile as File?,                  
+      failToSendChat: failToSendChat ?? this.failToSendChat, 
+      errorMessage: errorMessage ?? this.errorMessage,
+      imageFile: imageFile == _sentinel ? this.imageFile : imageFile as File?,
       chatList: chatList ?? this.chatList,
       groupChatList: groupChatList ?? this.groupChatList,
       selectedGroupChatId: selectedGroupChatId ?? this.selectedGroupChatId,
@@ -105,12 +109,13 @@ class ChatbotState extends Equatable {
         isDrawerOpen,
         isCannotLoadMoreGroupChat,
         isCannotLoadMoreChat,
-        isImageSizeTooBig, 
+        isImageSizeTooBig,
         isNewChatController3Lines,
         isLoadingChats,
         isLoadingGroupChats,
-        errorMessage,          
-        imageFile,        
+        failToSendChat, 
+        errorMessage,
+        imageFile,
         chatList,
         groupChatList,
         selectedGroupChatId,

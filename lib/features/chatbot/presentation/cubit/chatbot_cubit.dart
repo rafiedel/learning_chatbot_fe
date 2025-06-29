@@ -247,9 +247,11 @@ class ChatbotCubit extends Cubit<ChatbotState>{
   }
 
   Future<void> chooseGroupChat(int id) async {
+    state.newChatController.text = "";
     emit(state.copyWith(
       selectedGroupChatId: id,
       isCannotLoadMoreChat: false,
+      imageFile: null
     ));
 
     detachChatScrollListener();
@@ -515,16 +517,21 @@ class ChatbotCubit extends Cubit<ChatbotState>{
   }
 
   Future<void> onSubmitNewChat() async{
+    String tempInput = "";
+
     List<ChatModel> newChatList = List<ChatModel>.from(state.chatList)
           ..add(ChatModel(
             id: 10000, role: "user", 
             content: state.newChatController.text, 
             timestamp: DateTime.timestamp(), 
-            imageUrl: ""
+            imageUrl: "",
+            tempIF: state.imageFile
             ));
     emit(state.copyWith(
       chatList: newChatList
     ));
+
+    LoggerService.e(state.chatList[state.chatList.length-1].tempIF);
 
     Future.delayed(const Duration(milliseconds: 100), () {
         if (state.chatScrollController.hasClients) {
@@ -542,6 +549,7 @@ class ChatbotCubit extends Cubit<ChatbotState>{
       imageData: state.imageFile
     );
 
+    tempInput = state.newChatController.text;
     state.newChatController.clear();
 
     emit(state.copyWith(
@@ -562,6 +570,7 @@ class ChatbotCubit extends Cubit<ChatbotState>{
         if (kDebugMode) {
           LoggerService.e('${left.code}\n${left.message}');
         }
+        state.newChatController.text = tempInput;
         emit(state.copyWith(
           isLoading: false,
           isError: true,

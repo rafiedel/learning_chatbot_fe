@@ -1,9 +1,12 @@
+import 'dart:io';
+
 class ChatModel {
   final int id;
   final String role;
   final String content;
   final DateTime timestamp;
   final String imageUrl;
+  final File? tempIF;
 
   ChatModel({
     required this.id,
@@ -11,6 +14,7 @@ class ChatModel {
     required this.content,
     required this.timestamp,
     required this.imageUrl,
+    this.tempIF,
   });
 
   factory ChatModel.fromJson(Map<String, dynamic> json) => ChatModel(

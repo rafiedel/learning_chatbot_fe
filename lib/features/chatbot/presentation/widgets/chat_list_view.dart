@@ -39,7 +39,8 @@ class ChatListView extends StatelessWidget {
               if (e.role.toLowerCase() == "user") {
                 return UserBubbleChat(
                   content: e.content, 
-                  imageUrl: e.imageUrl
+                  imageUrl: e.imageUrl,
+                  tempIF: e.tempIF,
                 );
               }
               return AssistantMarkdown(content: e.content);
